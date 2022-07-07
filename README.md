@@ -9,6 +9,12 @@ Requires installed **Python 3.9+**
 ## How to use
 
 ```
+-f <path to public.xml> 
+```
+
+Adding a package name is also supported (Optional)
+
+```
 -f <path to public.xml> -p <package name>
 ```
 
