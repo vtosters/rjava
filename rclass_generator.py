@@ -73,7 +73,6 @@ if __name__ == "__main__":
     parser.add_argument("-p", "--package", help="Package of generated class")
     parser.add_argument("-c", "--comments", action="store_true", help="Add comments with decimal resource ids")
     args = parser.parse_args()
-    print(args)
     if not args.file:
         print("null pathname", file=sys.stderr)
         exit(-1)
