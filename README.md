@@ -9,17 +9,19 @@ Requires installed **Python 3.9+**
 ## How to use
 
 ```
--f <path to public.xml> 
+usage: rclass_generator.py [-h] -f <pathname> -p <packagename> [-c]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -f <pathname>, --file <pathname>
+                        pathname of public.xml
+  -p <packagename>, --package <packagename>
+                        packagename of generated class
+  -c, --comments        add comments with decimal ids 
 ```
 
-Adding a package name is also supported (Optional)
+## Example
 
 ```
--f <path to public.xml> -p <package name>
-```
-
-### Example
-
-```
--f public.xml -p com.vtosters.lite
+-f public.xml -p com.vtosters.lite -c
 ```

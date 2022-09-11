@@ -2,6 +2,8 @@
 import argparse, sys, re
 from typing import List
 
+TABULATION = " " * 4
+
 class AndroidResource:
     name: str
     id: str
@@ -11,7 +13,7 @@ class AndroidResource:
         self.id = id
 
     def build_line(self) -> str:
-        return "        public static final int {0} = {1};".format(self.name, self.id)
+        return TABULATION * 2 + "public static final int {0} = {1};".format(self.name, self.id)
 
 class Node:
     name: str
@@ -24,32 +26,33 @@ class Node:
         self.name = name
         self.resources = list()
 
-    def build_lines(self) -> list[str]:
+    def build_lines(self, add_comments) -> list[str]:
         lst = list()
-        lst.append("    public static final class {0} {{".format(self.name))
+        lst.append(TABULATION + "public static final class {0} {{".format(self.name))
         for resource in self.resources:
-            lst.append(resource.build_line())
-        lst.append("    }")
+            line = resource.build_line()
+            if add_comments:
+                line += " // " + str(int(resource.id, 16))
+            lst.append(line)
+        lst.append(TABULATION + "}")
         return lst
 
-nodes: list[Node] = list()
+NODES: list[Node] = list()
 
 def find_node(name):
-    for node in nodes:
+    for node in NODES:
         if name == node.name:
             return node
 
-def generate_rclass(package_name):
+def generate_rclass(package_name, add_comments):
     with open("R.java", "w") as f:
         if package_name:
-            f.write("package {package};".format(package=package_name))
-            f.write("\n\n")
+            f.write("package {0};\n\n".format(package_name))
         f.write("public class R {")
-        for node in nodes:
+        for node in NODES:
             f.write("\n")
-            for line in node.build_lines():
-                f.write(line)
-                f.write("\n")
+            for line in node.build_lines(add_comments):
+                f.write(line + "\n")
         f.write("}")
 
 def parse_resources(pathname):
@@ -61,16 +64,18 @@ def parse_resources(pathname):
             node = find_node(type)
             if not node:
                 node = Node(type)
-                nodes.append(node)
+                NODES.append(node)
             node.resources.append(AndroidResource(name, id))
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("-f", type=str, help="Pathname of public.xml")
-    parser.add_argument("-p", type=str, help="Package of generated class")
+    parser.add_argument("-f", "--file", help="Pathname of public.xml")
+    parser.add_argument("-p", "--package", help="Package of generated class")
+    parser.add_argument("-c", "--comments", action="store_true", help="Add comments with decimal resource ids")
     args = parser.parse_args()
-    if not args.f:
+    print(args)
+    if not args.file:
         print("null pathname", file=sys.stderr)
         exit(-1)
-    parse_resources(args.f)
-    generate_rclass(args.p)
+    parse_resources(args.file)
+    generate_rclass(args.package, args.comments)
