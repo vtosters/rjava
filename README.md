@@ -19,9 +19,3 @@ optional arguments:
                         packagename of generated class
   -c, --comments        add comments with decimal ids 
 ```
-
-## Example
-
-```
--f public.xml -p com.vtosters.lite -c
-```
